@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js" integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
 </head>
 <body>
 
     <form id="chat">
+        <input type="text" name="roomId" placeholder="Digite o ID da sala">
         <input type="text" name="username" placeholder="Digite seu usuário">
         <div class="messages"></div>
         <input type="text" name="message" placeholder="Sua mensagem aqui">
@@ -25,6 +25,7 @@
             renderMessage(message);
         });
         socket.on('previousMessages', function(messages) {
+            $('.messages').empty();
             for (message of messages) {
                 renderMessage(message);
             }
@@ -32,10 +33,12 @@
 
         $('#chat').submit(function(event) {
             event.preventDefault();
+            var roomId = $('[name=roomId]').val();
             var username = $('[name=username]').val();
             var message = $('[name=message]').val();
             renderMessage({username: username, message: message});
-            socket.emit('sendMessage', {username: username, message: message});
+            socket.emit('joinRoom', {roomId: roomId});
+            socket.emit('sendMessage', {roomId: roomId, username: username, message: message});
             $('[name=message]').val('');
 
             return false;
