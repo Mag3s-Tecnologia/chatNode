@@ -44,7 +44,7 @@ function storeChatMessage(roomId, message) {
 function getChatMessages(roomId) {
   const date = new Date().toISOString().slice(0,10); // get current date in YYYY-MM-DD format
   const dir = path.join(__dirname, '../messages');
-  const filePath = `${dir}/messages-${roomId}-${date}.json`;
+  const filePath = `${dir}/${roomId}/${date}.json`;
   if (fs.existsSync(filePath)) {
     const data = JSON.parse(fs.readFileSync(filePath));
     const filteredData = data.filter(message => message.message !== '').slice(-50);
@@ -58,8 +58,12 @@ function getChatMessages(roomId) {
         time: new Date().toLocaleTimeString()
       }
     ];
-    fs.writeFileSync(`${dir}/messages-${roomId}-${date}.json`, JSON.stringify(dataPrimal));
-    const data = JSON.parse(fs.readFileSync(`${dir}/messages-${roomId}-${date}.json`));
+
+    if (!fs.existsSync(`${dir}/${roomId}`)){
+      fs.mkdirSync(`${dir}/${roomId}`, { recursive: true });
+    }
+    fs.writeFileSync(`${dir}/${roomId}/${date}.json`, JSON.stringify(dataPrimal));
+    const data = JSON.parse(fs.readFileSync(`${dir}/messages/${roomId}/${date}.json`));
     const filteredData = data.filter(message => message.message !== '').slice(-50);
     return filteredData;
   }

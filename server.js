@@ -14,6 +14,7 @@ app.use('/', (req, res) => {
   res.render('index.html')
 })
 io.on('connection', socket => {
+
   socket.on('joinRoom', ({roomId}) => {
       socket.join(roomId)
       let chatMessages = functions.getChatMessages(roomId);
