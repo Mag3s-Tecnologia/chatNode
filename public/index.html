@@ -4,22 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js" integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
-
-    <form id="chat">
-        <input type="text" name="roomId" placeholder="Digite o ID da sala">
-        <input type="text" name="username" placeholder="Digite seu usuário">
-        <div class="messages"></div>
-        <input type="text" name="message" placeholder="Sua mensagem aqui">
-        <button type="submit">Enviar</button>
-    </form>
+    <div class="container min-h-screen justify-center items-center">
+        <form id="chat">
+            <div class="grid grid-cols-3 gap-4">
+             <div class="col-span-1">
+                 <input type="text" name="roomId" id="roomId" value="0">
+                 <input type="text" name="username" id="username" placeholder="Digite seu usuário">
+                 <input type="text" name="message" id="message" placeholder="Sua mensagem aqui">
+             </div>
+             <div class="col-span-2">
+                 <div class="messages min-h-48"></div>
+             </div>
+            </div>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
 
     <script type="text/javascript">
-        var socket = io('http://localhost:3000');
+        var socket = io('http://localhost:3001');
 
         socket.on('receivedMessage', function(message) {
             renderMessage(message);
@@ -34,18 +43,33 @@
         $('#chat').submit(function(event) {
             event.preventDefault();
             var roomId = $('[name=roomId]').val();
+            if (roomId == 0) {
+                socket.emit('joinRoom', {roomId: roomId});
+            }
             var username = $('[name=username]').val();
             var message = $('[name=message]').val();
-            renderMessage({username: username, message: message});
-            socket.emit('joinRoom', {roomId: roomId});
             socket.emit('sendMessage', {roomId: roomId, username: username, message: message});
+            $('[name=message]').val('');
+            return false;
+        });
+
+
+        $('[name=roomId]').change(function(event) {
+            event.preventDefault();
+            var roomId = $('[name=roomId]').val();
+
+            socket.emit('joinRoom', {roomId: roomId});
+
+            renderMessage({username: username, message: message});
+
             $('[name=message]').val('');
 
             return false;
         });
 
         function renderMessage(message) {
-            $('.messages').append('<div class="message"><strong>' + message.username + '</strong>: ' + message.message + '</div>');
+            $('.messages').append('<div class="message"><strong>' + message.username + '</strong>: ' + message.message + (message.time? '</br><span class="time">Hora: '+ message.time +'</span>' : '')+ '</div>');
+            $('.messages').scrollTop($('.messages')[0].scrollHeight);
         }
     </script>
 </body>

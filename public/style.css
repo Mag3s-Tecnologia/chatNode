@@ -1,12 +1,5 @@
-html, body {
-    height: 100%;
-  }
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+
 
   #chat {
     height: 100%;
@@ -17,8 +10,8 @@ html, body {
   }
 
   input {
-    width: 600px;
-    border: 1px solid #ddd;
+    min-width: 100%;
+    border: 1px solid #000;
     height: 50px;
     padding: 0 20px;
     font-size: 14px;
@@ -37,9 +30,19 @@ html, body {
   }
 
   .messages {
-    width: 600px;
-    height: 400px;
-    margin: 20px 0;
-    border: 1px solid #ddd;
-    padding: 20px;
+    border: 1px solid #000 !important;
+    overflow-y: scroll;
+    max-height: 400px;
+    position: relative;
+  }
+  .message{
+    padding: 10px;
+    border-bottom: 1px solid #000;
+
+  }
+  .time{
+    font-size: 10px;
+    color: #666;
+    display: flex;
+    justify-content: flex-end;
   }
