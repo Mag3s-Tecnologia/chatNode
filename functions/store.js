@@ -34,7 +34,7 @@ function storeChatMessage(roomId, message) {
     if (!fs.existsSync(dir)){
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(`${dir}/messages-${roomId}-${date}.json`, JSON.stringify(chatMessages));
+    fs.writeFileSync(`${dir}/${roomId}/${date}.json`, JSON.stringify(chatMessages));
     return {
       'status': 'success',
       'message': 'Mensagem enviada com sucesso!'
@@ -51,19 +51,17 @@ function getChatMessages(roomId) {
 
     return filteredData
   } else {
-    const dataPrimal = [
-      {
-        username: 'Chatbot',
-        message: 'Bem-vindo ao chat! 🎉',
-        time: new Date().toLocaleTimeString()
-      }
-    ];
+    const dataPrimal = [{
+      username: 'Chatbot',
+      message: 'Bem-vindo ao chat! 🎉',
+      time: new Date().toLocaleTimeString()
+    }];
 
     if (!fs.existsSync(`${dir}/${roomId}`)){
       fs.mkdirSync(`${dir}/${roomId}`, { recursive: true });
     }
     fs.writeFileSync(`${dir}/${roomId}/${date}.json`, JSON.stringify(dataPrimal));
-    const data = JSON.parse(fs.readFileSync(`${dir}/messages/${roomId}/${date}.json`));
+    const data = JSON.parse(fs.readFileSync(`${dir}/${roomId}/${date}.json`));
     const filteredData = data.filter(message => message.message !== '').slice(-50);
     return filteredData;
   }
