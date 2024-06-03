@@ -29,7 +29,7 @@ function storeChatMessage(roomId, message) {
   }
   if (approval) {
     chatMessages.push(message);
-    const date = new Date().toISOString().slice(0,10); // get current date in YYYY-MM-DD format
+    const date = new Date().toISOString().slice(0,10);
     const dir = path.join(__dirname, '../messages');
     if (!fs.existsSync(dir)){
       fs.mkdirSync(dir, { recursive: true });
@@ -42,7 +42,7 @@ function storeChatMessage(roomId, message) {
   }
 }
 function getChatMessages(roomId) {
-  const date = new Date().toISOString().slice(0,10); // get current date in YYYY-MM-DD format
+  const date = new Date().toISOString().slice(0,10);
   const dir = path.join(__dirname, '../messages');
   const filePath = `${dir}/${roomId}/${date}.json`;
   if (fs.existsSync(filePath)) {
