@@ -10,7 +10,7 @@ app.set('views', path.join(__dirname, 'public'))
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'html')
 
-app.use('/', (req, res) => {
+app.get('/', (req, res) => {
   res.render('index.html')
 })
 io.on('connection', socket => {
@@ -30,5 +30,15 @@ io.on('connection', socket => {
       socket.emit('error', data.message)
     }
   })
+})
+
+// Criar endpoint tipo get para trazer o getMessage recebendo via parametro o roomId
+app.get('/getMessage', (req, res) => {
+  const roomId = req.query.roomId;
+  if (!roomId) {
+    res.status(400).send('roomId is required');
+  }
+  const chatMessages = functions.getChatMessages(roomId);
+  res.send(chatMessages);
 })
 server.listen(3001)
