@@ -66,7 +66,32 @@ function getChatMessages(roomId) {
     return filteredData;
   }
 }
+
+function deleteChatMessages(roomId, dateInput = false) {
+  let date;
+  if (!dateInput) {
+    date = new Date().toISOString().slice(0,10);
+  }else{
+    date = dateInput;
+  }
+  const dir = path.join(__dirname, '../messages');
+  const filePath = `${dir}/${roomId}/${date}.json`;
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    return {
+      'status': 'success',
+      'message': 'Mensagens deletadas'
+    }
+  }else{
+    return {
+      'status': 'error',
+      'message': 'Nenhuma mensagem encontrada'
+    }
+  }
+}
+
 module.exports = {
   getChatMessages,
-  storeChatMessage
+  storeChatMessage,
+  deleteChatMessages
 };
