@@ -32,7 +32,7 @@ io.on('connection', socket => {
   })
 })
 
-// Criar endpoint tipo get para trazer o getMessage recebendo via parametro o roomId
+// Endpoint tipo get para trazer o getMessage recebendo via parametro o roomId
 app.get('/getMessage', (req, res) => {
   const roomId = req.query.roomId;
   if (!roomId) {
@@ -41,4 +41,27 @@ app.get('/getMessage', (req, res) => {
   const chatMessages = functions.getChatMessages(roomId);
   res.send(chatMessages);
 })
+
+// Endpoint para deletar o arquivo de mensagem pelo roomId
+app.delete('/deleteMessage', (req, res) => {
+  const roomId = req.query.roomId;
+  let data;
+
+  if (!roomId) {
+    res.status(400).send('roomId is required');
+  }
+
+  if (req.query.date) {
+     data = functions.deleteChatMessages(roomId, req.query.date);
+  }else{
+     data = functions.deleteChatMessages(roomId);
+  }
+  if (data.status == 'success') {
+    res.status(200).send('Mensagens deletadas com sucesso!');
+  }else{
+    res.status(400).send(data.message);
+  }
+})
+
+
 server.listen(3001)
