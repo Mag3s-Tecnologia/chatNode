@@ -1,13 +1,13 @@
 const PT = require("./PT.json");
 const EN = require("./EN.json");
 const ES = require("./ES.json");
-const SITE_NAMES = require("./SITE_NAMES.json");
-
+const GLOBALS = require("./GLOBALS.json");
 
 const blackListWords = [
   ...PT,
   ...EN,
   ...ES,
+  ...GLOBALS,
   // ...SITE_NAMES,
 ];
 
@@ -16,5 +16,6 @@ function uniqueArrayItems(a) {
 }
 
 module.exports = {
-  blackListWords, uniqueArrayItems
+  blackListWords,
+  uniqueArrayItems,
 };
