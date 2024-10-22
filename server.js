@@ -18,20 +18,19 @@ app.set('view engine', 'html')
 app.get('/', (req, res) => {
   res.render('index.html')
 })
-io.on('connection', socket => {
+io.on('connection', (socket) => {
 
-  socket.on('joinRoom', ({roomId}) => {
-      socket.join(roomId)
-      let chatMessages = functions.getChatMessages(roomId);
-      io.in(roomId).emit('previousMessages', chatMessages)
+  socket.on('joinRoom', ({ roomId }) => {
+    socket.join(roomId)
+    let chatMessages = functions.getChatMessages(roomId);
+    io.in(roomId).emit('previousMessages', chatMessages)
   })
 
-  socket.on('sendMessage', ({roomId, username, message}) => {
-    let messageObj = {username: username, message: message}
-    const data = functions.storeChatMessage(roomId, messageObj)
-    if (data.status == 'success') {
-      io.in(roomId).emit('receivedMessage', messageObj)
-    }else{
+  socket.on('sendMessage', async ({ roomId, ...data }) => {
+    const res = await functions.storeChatMessage(roomId, data)
+    if (res.status == 'success') {
+      io.in(roomId).emit('receivedMessage', res.data);
+    } else {
       socket.emit('error', data.message)
     }
   })
@@ -57,16 +56,20 @@ app.delete('/deleteMessage', (req, res) => {
   }
 
   if (req.query.date) {
-     data = functions.deleteChatMessages(roomId, req.query.date);
-  }else{
-     data = functions.deleteChatMessages(roomId);
+    data = functions.deleteChatMessages(roomId, req.query.date);
+  } else {
+    data = functions.deleteChatMessages(roomId);
   }
   if (data.status == 'success') {
     res.status(200).send('Mensagens deletadas com sucesso!');
-  }else{
+  } else {
     res.status(400).send(data.message);
   }
 })
 
+const port = process.env.NODE_ENV == "development" ? 8084 : 3001;
 
-server.listen(3001)
+server.listen(port, () => {
+  console.log("Environment:", process.env.NODE_ENV);
+  console.log(`Server Started On http://localhost:${port}`);
+});
